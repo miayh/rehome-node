@@ -28,23 +28,74 @@ endfunc
 
 ####################################################################################################
 
-func getRadioInfo
-l+ radio_info
-lst =RU
-l-
-!cat radio_info >> $1
+func addMOsToGroup
+unset $output
+unset $nr_of_lines
+unset $i
+$output = readfile($1)
+for $i = 1 to $nr_of_lines
+	$mo = $output[$i]
+	if $mo ~ $2
+		$mo_parts = split($mo)
+		$proxy = $mo_parts[1]
+		ma $3 $proxy
+	fi
+done
+pr $3
 endfunc
-getRadioInfo
+
+l+ radio_info
+st =RU
+l-
+ma radios 0
+addMOsToGroup radio_info ^\s+[0-9]+\s.*RU radios
+mr radios 0
+
+####################################################################################################
+
+func getRadioInfo
+unset $radio_info_output
+unset $nr_of_lines
+unset $i
+l+ radio_info
+st =RU
+l-
+$radio_info_output = readfile(radio_info)
+for $i = 1 to $nr_of_lines
+	$radio_mo = $radio_info_output[$i]
+	if $radio_mo ~ ^\s+[0-9]+\s.*RU
+		$radio_mo_parts = split($radio_mo)
+		$radio_proxy = $radio_mo_parts[1]
+		ma radios $radios_proxy
+	fi
+done
+pr radios
+# createFromExistingMOs $radios radioDefinition.txt
+# !cat radio_info >> $1
+endfunc
 
 ####################################################################################################
 
 func getRfPortInfo
+unset $rfport_info_output
+unset $nr_of_lines
+unset $i
 l+ rfport_info
 lst RfPort
 l-
-!cat rfport_info >> $1
+$radio_info_output = readfile(radio_info)
+for $i = 1 to $nr_of_lines
+	$radio_mo = $radio_info_output[$i]
+	if $radio_mo ~ ^\s+[0-9]+\s.*RU
+		$radio_mo_parts = split($radio_mo)
+		$radio_proxy = $radio_mo_parts[1]
+		ma radios $radios_proxy
+	fi
+done
+pr radios
+# createFromExistingMOs $radios radioDefinition.txt
+# !cat rfport_info >> $1
 endfunc
-getRfPortInfo
 
 ####################################################################################################
 
@@ -54,13 +105,22 @@ lst Equipment=1,RiLink
 l-
 !cat rilink_info >> $1
 endfunc
-getRiLinkInfo
+
+####################################################################################################
+
+func getAntennaInfo
+l+ antenna_info
+lst AntennaUnit
+l-
+!cat antenna_info >> $1
+endfunc
+getAntennaInfo
 
 ####################################################################################################
 
 func getBranchInfo
 l+ branch_info
-hget RfBranch
+hget . rfBranch
 l-
 !cat branch_info >> $2
 endfunc

@@ -40,11 +40,14 @@ lst Equipment=1,RiLink
 lst FieldReplaceableUnit
 lst FieldReplaceableUnit=RRU
 st FieldReplaceableUnit=RRU
+lst =RU-([0-9])+-([0-9])+$
 
 # print contents of MO group
 pr <mogroup>
+
 
 # PART 2
 
 # create new node name using python based on
 # input from the customer???
+
