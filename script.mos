@@ -30,7 +30,7 @@ endfunc
 
 func getRadioInfo
 l+ radio_info
-lst FieldReplaceableUnit
+lst =RU
 l-
 !cat radio_info >> $1
 endfunc

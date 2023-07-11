@@ -1,0 +1,50 @@
+# PART 1
+
+# get relevant MOs
+st cell
+
+# for every MO listed in table 
+# based on `st cell`:
+#   get all MOs linked to current MO
+lk (PROXY|MO NAME)
+
+# get current MO's profile
+get (PROXY|MO NAME)
+
+# create new node (using simulated mode)
+u+s
+del (PROXY|MO NAME)
+u-
+# save node info into txt file
+l cat $undocommandfile
+
+# get cell frequencies, TAC, PCI
+# for LTE:
+hget ^Eutrancell dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
+# for NR:
+hget ^NRSectorCarrier arfcnDL|arfcnUL|configuredMaxTxPower|MaxTransmissionPower|noofUsed|bSChannelBw
+
+# get sector info
+st sector
+
+# get branches info
+hget RfBranch
+
+# get radio port info??
+st RfPort
+
+# get RiLink info
+lst Equipment=1,RiLink
+
+# get radio info
+lst FieldReplaceableUnit
+lst FieldReplaceableUnit=RRU
+st FieldReplaceableUnit=RRU
+
+# print contents of MO group
+pr <mogroup>
+
+# PART 2
+
+# create new node name using python based on
+# input from the customer???
