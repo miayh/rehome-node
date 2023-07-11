@@ -1,0 +1,149 @@
+func createFromExistingMOs
+for $mo in $1
+	get $mo
+	u+s
+	del $mo
+	u-
+	!cat $undocommandfile >> $2
+done
+endfunc
+
+####################################################################################################
+
+func getCellDefinition
+!rm cell_def
+!rm cellDefinition.txt
+if $1 ~ ^EUtranCell
+	l+ cell_def
+	hget $1 dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
+	l-
+	!cat cell_def >> $2
+else if $1 ~ ^NRSectorCarrier
+	l+ cell_def
+	hget $1 arfcnDL|arfcnUL|configuredMaxTxPower|MaxTransmissionPower|noofUsed|bSChannelBw
+	l-
+	!cat cell_def >> $2
+fi
+endfunc
+
+####################################################################################################
+
+func getRadioInfo
+l+ radio_info
+lst FieldReplaceableUnit
+l-
+!cat radio_info >> $1
+endfunc
+getRadioInfo
+
+####################################################################################################
+
+func getRfPortInfo
+l+ rfport_info
+lst RfPort
+l-
+!cat rfport_info >> $1
+endfunc
+getRfPortInfo
+
+####################################################################################################
+
+func getRiLinkInfo
+l+ rilink_info
+lst Equipment=1,RiLink
+l-
+!cat rilink_info >> $1
+endfunc
+getRiLinkInfo
+
+####################################################################################################
+
+func getBranchInfo
+l+ branch_info
+hget RfBranch
+l-
+!cat branch_info >> $2
+endfunc
+getBranchInfo
+
+####################################################################################################
+
+func getCarrierDefinition
+unset $carrier_def_output
+unset $nr_of_lines
+unset $i
+l+ carrier_def
+st carrier
+l-
+$carrier_def_output = readfile(carrier_def)
+for $i = 1 to $nr_of_lines
+	$carrier_mo = $carrier_def_output[$i]
+	if $carrier_mo ~ ^\s+[0-9]+\s.*SectorCarrier
+		$carrier_mo_parts = split($carrier_mo)
+		$carrier_proxy = $carrier_mo_parts[1]
+		ma carriers $carrier_proxy
+	fi
+done
+pr carriers
+# createFromExistingMOs $carriers carrierDefinition.txt
+endfunc
+getCarrierDefinition
+
+####################################################################################################
+
+func getSectorDefinition
+unset $sector_def_output
+unset $nr_of_lines
+unset $i
+l+ sector_def
+st sector
+l-
+$sector_def_output = readfile(sector_def)
+for $i = 1 to $nr_of_lines
+	$sector_mo = $sector_def_output[$i]
+	if $sector_mo ~ ^\s+[0-9]+\s+.*SectorEquipment
+		$sector_mo_parts = split($sector_mo)
+		$sector_proxy = $sector_mo_parts[1]
+		ma sectors $sector_proxy
+	fi
+done
+pr sectors
+# createFromExistingMOs $sectors sectorDefinition.txt
+endfunc
+getSectorDefinition
+
+####################################################################################################
+
+func getCellInfo
+!rm cell_info
+unset $cell_info_output
+unset $nr_of_lines
+unset $i
+l+ cell_info
+st cell
+l-
+$cell_info_output = readfile(cell_info)
+for $i = 1 to $nr_of_lines
+	$cell_mo = $cell_info_output[$i]
+	if $cell_mo ~ ^\s+[0-9]+\s
+		$cell_mo_parts = split($cell_mo)
+		$cell_proxy = $cell_mo_parts[1]
+		$ldn = ldn($cell_proxy)
+		getCellDefinition $ldn cellDefinition.txt
+		# lk $cell_proxy
+		# createFromExistingMOs lk_group node.txt
+	fi
+done
+endfunc
+getCellInfo
+
+####################################################################################################
+
+func collectNodeInfo
+getCellInfo
+getCarrierDefinition
+getSectorDefinition
+getBranchInfo
+getRiLinkInfo
+getRfPortInfo
+endfunc
