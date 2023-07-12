@@ -1,29 +1,10 @@
 func createFromExistingMOs
 for $mo in $1
-	get $mo
 	u+s
 	del $mo
 	u-
 	!cat $undocommandfile >> $2
 done
-endfunc
-
-####################################################################################################
-
-func getCellDefinition
-!rm cell_def
-!rm cellDefinition.txt
-if $1 ~ ^EUtranCell
-	l+ cell_def
-	hget $1 dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
-	l-
-	!cat cell_def >> $2
-else if $1 ~ ^NRSectorCarrier
-	l+ cell_def
-	hget $1 arfcnDL|arfcnUL|configuredMaxTxPower|MaxTransmissionPower|noofUsed|bSChannelBw
-	l-
-	!cat cell_def >> $2
-fi
 endfunc
 
 ####################################################################################################
@@ -41,61 +22,43 @@ for $i = 1 to $nr_of_lines
 		ma $3 $proxy
 	fi
 done
-pr $3
 endfunc
-
-l+ radio_info
-st =RU
-l-
-ma radios 0
-addMOsToGroup radio_info ^\s+[0-9]+\s.*RU radios
-mr radios 0
 
 ####################################################################################################
 
 func getRadioInfo
-unset $radio_info_output
-unset $nr_of_lines
-unset $i
 l+ radio_info
 st =RU
 l-
-$radio_info_output = readfile(radio_info)
-for $i = 1 to $nr_of_lines
-	$radio_mo = $radio_info_output[$i]
-	if $radio_mo ~ ^\s+[0-9]+\s.*RU
-		$radio_mo_parts = split($radio_mo)
-		$radio_proxy = $radio_mo_parts[1]
-		ma radios $radios_proxy
-	fi
-done
+!cat radio_info >> $1
+ma radios 0
+addMOsToGroup radio_info ^\s+[0-9]+\s.*RU radios
+mr radios 0
 pr radios
-# createFromExistingMOs $radios radioDefinition.txt
-# !cat radio_info >> $1
+createFromExistingMOs radios radioCreation.mos
+!rm radio_info
 endfunc
+
+!touch radioInfo.txt
+getRadioInfo radioInfo.txt
 
 ####################################################################################################
 
 func getRfPortInfo
-unset $rfport_info_output
-unset $nr_of_lines
-unset $i
 l+ rfport_info
 lst RfPort
 l-
-$radio_info_output = readfile(radio_info)
-for $i = 1 to $nr_of_lines
-	$radio_mo = $radio_info_output[$i]
-	if $radio_mo ~ ^\s+[0-9]+\s.*RU
-		$radio_mo_parts = split($radio_mo)
-		$radio_proxy = $radio_mo_parts[1]
-		ma radios $radios_proxy
-	fi
-done
-pr radios
-# createFromExistingMOs $radios radioDefinition.txt
-# !cat rfport_info >> $1
+!cat rfport_info >> $1
+ma ports 0
+addMOsToGroup rfport_info ^\s+[0-9]+\s.*RfPort ports
+mr ports 0
+pr ports
+createFromExistingMOs ports rfPortCreation.mos
+!rm rfport_info
 endfunc
+
+!touch rfPortInfo.txt
+getRfPortInfo rfPortInfo.txt
 
 ####################################################################################################
 
@@ -104,7 +67,16 @@ l+ rilink_info
 lst Equipment=1,RiLink
 l-
 !cat rilink_info >> $1
+ma rilinks 0
+addMOsToGroup rilink_info ^\s+[0-9]+\s.*Equipment=1,RiLink rilinks
+mr rilinks 0
+pr rilinks
+createFromExistingMOs rilinks rilinkCreation.mos
+!rm rilink_info
 endfunc
+
+!touch rilinkInfo.txt
+getRiLinkInfo rilinkInfo.txt
 
 ####################################################################################################
 
@@ -113,8 +85,16 @@ l+ antenna_info
 lst AntennaUnit
 l-
 !cat antenna_info >> $1
+ma antennas 0
+addMOsToGroup antenna_info ^\s+[0-9]+\s.*AntennaUnit antennas
+mr antennas 0
+pr antennas
+createFromExistingMOs antennas antennaCreation.mos
+!rm antenna_info
 endfunc
-getAntennaInfo
+
+!touch antennaInfo.txt
+getAntennaInfo antennaInfo.txt
 
 ####################################################################################################
 
@@ -122,55 +102,71 @@ func getBranchInfo
 l+ branch_info
 hget . rfBranch
 l-
-!cat branch_info >> $2
+!cat branch_info >> $1
+ma branches 0
+addMOsToGroup branch_info ^\s+[0-9]+\s.*rfBranch branches
+mr branches 0
+pr branches
+createFromExistingMOs branches branchCreation.mos
+!rm branch_info
 endfunc
-getBranchInfo
+
+!touch branchInfo.txt
+getBranchInfo branchInfo.txt
 
 ####################################################################################################
 
-func getCarrierDefinition
-unset $carrier_def_output
-unset $nr_of_lines
-unset $i
-l+ carrier_def
+func getCarrierInfo
+l+ carrier_info
 st carrier
 l-
-$carrier_def_output = readfile(carrier_def)
-for $i = 1 to $nr_of_lines
-	$carrier_mo = $carrier_def_output[$i]
-	if $carrier_mo ~ ^\s+[0-9]+\s.*SectorCarrier
-		$carrier_mo_parts = split($carrier_mo)
-		$carrier_proxy = $carrier_mo_parts[1]
-		ma carriers $carrier_proxy
-	fi
-done
+!cat carrier_info >> $1
+ma carriers 0
+addMOsToGroup carrier_info ^\s+[0-9]+\s.*SectorCarrier carriers
+mr carriers 0
 pr carriers
-# createFromExistingMOs $carriers carrierDefinition.txt
+createFromExistingMOs carriers carrierCreation.mos
+!rm carrier_info
 endfunc
-getCarrierDefinition
+
+!touch carrierInfo.txt
+getCarrierInfo carrierInfo.txt
 
 ####################################################################################################
 
-func getSectorDefinition
-unset $sector_def_output
-unset $nr_of_lines
-unset $i
-l+ sector_def
+func getSectorInfo
+l+ sector_info
 st sector
 l-
-$sector_def_output = readfile(sector_def)
-for $i = 1 to $nr_of_lines
-	$sector_mo = $sector_def_output[$i]
-	if $sector_mo ~ ^\s+[0-9]+\s+.*SectorEquipment
-		$sector_mo_parts = split($sector_mo)
-		$sector_proxy = $sector_mo_parts[1]
-		ma sectors $sector_proxy
-	fi
-done
+!cat sector_info >> $1
+ma sectors 0
+addMOsToGroup sector_info ^\s+[0-9]+\s.*SectorEquipment sectors
+mr sectors 0
 pr sectors
-# createFromExistingMOs $sectors sectorDefinition.txt
+createFromExistingMOs sectors sectorCreation.mos
+!rm sector_info
 endfunc
-getSectorDefinition
+
+!touch sectorInfo.txt
+getSectorInfo sectorInfo.txt
+
+####################################################################################################
+
+func getCellProperties
+!rm cell_def
+!rm cellProperties.txt
+if $1 ~ ^EUtranCell
+	l+ cell_def
+	hget $1 dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
+	l-
+	!cat cell_def >> $2
+else if $1 ~ ^NRSectorCarrier
+	l+ cell_def
+	hget $1 arfcnDL|arfcnUL|configuredMaxTxPower|MaxTransmissionPower|noofUsed|bSChannelBw
+	l-
+	!cat cell_def >> $2
+fi
+endfunc
 
 ####################################################################################################
 
@@ -182,6 +178,7 @@ unset $i
 l+ cell_info
 st cell
 l-
+!cat cell_info >> $1
 $cell_info_output = readfile(cell_info)
 for $i = 1 to $nr_of_lines
 	$cell_mo = $cell_info_output[$i]
@@ -189,21 +186,31 @@ for $i = 1 to $nr_of_lines
 		$cell_mo_parts = split($cell_mo)
 		$cell_proxy = $cell_mo_parts[1]
 		$ldn = ldn($cell_proxy)
-		getCellDefinition $ldn cellDefinition.txt
-		# lk $cell_proxy
-		# createFromExistingMOs lk_group node.txt
+		getCellProperties $ldn cellProperties.txt
+		lk $cell_proxy
+		createFromExistingMOs lk_group $cell_proxyLinkedMOsCreation.mos
 	fi
 done
 endfunc
-getCellInfo
+
+!touch cellInfo.txt
+getCellInfo cellInfo.txt
 
 ####################################################################################################
 
 func collectNodeInfo
-getCellInfo
-getCarrierDefinition
-getSectorDefinition
-getBranchInfo
-getRiLinkInfo
-getRfPortInfo
+!touch cellInfo.txt
+!touch sectorInfo.txt
+!touch carrierInfo.txt
+!touch branchInfo.txt
+!touch rilinkInfo.txt
+!touch rfPortInfo.txt
+getCellInfo cellInfo.txt
+getCarrierInfo carrierInfo.txt
+getSectorInfo sectorInfo.txt
+getBranchInfo branchInfo.txt
+getRiLinkInfo rilinkInfo.txt
+getRfPortInfo rfPortInfo.txt
 endfunc
+
+collectNodeInfo
