@@ -101,6 +101,7 @@ getAntennaInfo antennaInfo.txt
 func getBranchInfo
 l+ branch_info
 hget . rfBranch
+hget . rfBranch
 l-
 !cat branch_info >> $1
 ma branches 0
