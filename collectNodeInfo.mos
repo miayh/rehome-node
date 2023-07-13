@@ -172,7 +172,6 @@ endfunc
 ####################################################################################################
 
 func getCellInfo
-!rm cell_info
 unset $cell_info_output
 unset $nr_of_lines
 unset $i
@@ -192,6 +191,7 @@ for $i = 1 to $nr_of_lines
 		createFromExistingMOs lk_group $cell_proxyLinkedMOsCreation.mos
 	fi
 done
+!rm cell_info
 endfunc
 
 !touch cellInfo.txt

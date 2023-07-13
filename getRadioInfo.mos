@@ -1,0 +1,42 @@
+func createFromExistingMOs
+for $mo in $1
+	lgmc $mo
+	!cat $undocommandfile >> $2
+done
+endfunc
+
+####################################################################################################
+
+func addMOsToGroup
+unset $output
+unset $nr_of_lines
+unset $i
+$output = readfile($1)
+for $i = 1 to $nr_of_lines
+	$mo = $output[$i]
+	if $mo ~ $2
+		$mo_parts = split($mo)
+		$proxy = $mo_parts[1]
+		ma $3 $proxy
+	fi
+done
+endfunc
+
+####################################################################################################
+# need to create radioCreation.mos first!!!
+
+func getRadioInfo
+l+ radio_info
+st =RU
+l-
+!cat radio_info >> $1
+ma radios 0
+addMOsToGroup radio_info ^\s+[0-9]+\s.*RU radios
+mr radios 0
+pr radios
+createFromExistingMOs radios radioCreation.mos
+!rm radio_info
+endfunc
+
+!touch radioInfo.txt
+getRadioInfo radioInfo.txt
