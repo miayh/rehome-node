@@ -3,10 +3,8 @@
 ####################################################################################################
 
 func createMOs
-for $cur_mo in $1
-	lgmc $cur_mo
-	!cp $undocommandfile $arg2
-done
+lgmc $1
+!cp $undocommandfile $arg2
 endfunc
 
 ####################################################################################################
@@ -44,11 +42,24 @@ createMOs radios $arg2
 endfunc
 
 ####################################################################################################
+
+func getRfPortInfo
+$arg2 = $2
+$arg3 = $3
+l+ rfport_info
+lst $arg3
+l-
+!cat rfport_info > $1
+ma ports 0
+createGroup rfport_info ^\s+[0-9]+\s.*$arg3 ports
+mr ports 0
+pr ports
+createMOs ports $arg2
+!rm rfport_info
+endfunc
+
+####################################################################################################
 ### MAIN
 ####################################################################################################
-
-!touch $1 
-!touch $2
-getRadioInfo $1 $2 $3
-# run getRadioInfo.mos radioInfo.txt radioCreation.mos =RRU-1
-
+run $1
+# run cmds.mos

@@ -45,9 +45,14 @@ lst =RU-([0-9])+-([0-9])+$
 # print contents of MO group
 pr <mogroup>
 
+this works:
+$2 = `cat $undocommandfile`
 
 # PART 2
 
 # create new node name using python based on
 # input from the customer???
 
+# idea: parse through lines of a file, where
+# each line contains the name of the files 
+# for each node
