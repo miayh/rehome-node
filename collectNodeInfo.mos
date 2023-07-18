@@ -147,20 +147,27 @@ endfunc
 
 ####################################################################################################
 
+func createCell
+lgmc $cur_mo
+!cat $undocommandfile >> $arg2
+endfunc
+
+####################################################################################################
+
 func getCellProperties
 if $1 ~ ^EUtranCell
 	l+ cell_def
 	hget $1 dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
 	l-
 	!cat cell_def >> $2
-else if $1 ~ ^NRSectorCarrier
+	!rm cell_def
+else if $1 ~ ^NRCell
 	l+ cell_def
 	hget $1 arfcnDL|arfcnUL|configuredMaxTxPower|MaxTransmissionPower|noofUsed|bSChannelBw
 	l-
 	!cat cell_def >> $2
+	!rm cell_def
 fi
-!rm cell_def
-!rm cellProperties.txt
 endfunc
 
 ####################################################################################################
@@ -169,6 +176,7 @@ func getCellInfo
 unset $cell_info_output
 unset $nr_of_lines
 unset $i
+$arg2 = $2
 $arg3 = $3
 l+ cell_info
 st $arg3
@@ -181,8 +189,9 @@ for $i = 1 to $nr_of_lines
 		$cell_mo_parts = split($cell_mo)
 		$cell_proxy = $cell_mo_parts[1]
 		$ldn = ldn($cell_proxy)
-		getCellProperties $ldn cellProperties.txt
-		createMOs $ldn $cell_proxy.mos
+		$rdn = rdn($cell_proxy)
+		getCellProperties $rdn cellProperties.txt
+		createCell $ldn $arg2
 	fi
 done
 !rm cell_info

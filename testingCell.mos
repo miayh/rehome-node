@@ -2,9 +2,9 @@
 ### FUNCTION DEFINITIONS
 ####################################################################################################
 
-func createMOs
-lgmc $1
-!cp $undocommandfile $arg2
+func createCell
+lgmc $cur_mo
+!cat $undocommandfile >> $arg2
 endfunc
 
 ####################################################################################################
@@ -26,40 +26,52 @@ endfunc
 
 ####################################################################################################
 
-func getRadioInfo
-$arg2 = $2
-$arg3 = $3
-l+ radio_info
-st $3
-l-
-!cat radio_info > $1
-ma radios 0
-createGroup radio_info ^\s+[0-9]+\s.*$arg3 radios
-mr radios 0
-pr radios
-createMOs radios $arg2
-!rm radio_info
+func getCellProperties
+if $1 ~ ^EUtranCell
+	l+ cell_def
+	hget $1 dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
+	l-
+	!cat cell_def >> $2
+	!rm cell_def
+else if $1 ~ ^NRCell
+	l+ cell_def
+	hget $1 arfcnDL|arfcnUL|configuredMaxTxPower|MaxTransmissionPower|noofUsed|bSChannelBw
+	l-
+	!cat cell_def >> $2
+	!rm cell_def
+fi
 endfunc
 
 ####################################################################################################
 
-func getRfPortInfo
+func getCellInfo
+unset $cell_info_output
+unset $nr_of_lines
+unset $i
 $arg2 = $2
 $arg3 = $3
-l+ rfport_info
-lst $arg3
+l+ cell_info
+st $arg3
 l-
-!cat rfport_info > $1
-ma ports 0
-createGroup rfport_info ^\s+[0-9]+\s.*$arg3 ports
-mr ports 0
-pr ports
-createMOs ports $arg2
-!rm rfport_info
+!cat cell_info > $1
+$cell_info_output = readfile(cell_info)
+for $i = 1 to $nr_of_lines
+	$cell_mo = $cell_info_output[$i]
+	if $cell_mo ~ ^\s+[0-9]+\s
+		$cell_mo_parts = split($cell_mo)
+		$cell_proxy = $cell_mo_parts[1]
+		$ldn = ldn($cell_proxy)
+		$rdn = rdn($cell_proxy)
+		getCellProperties $rdn cellProperties.txt
+		createCell $ldn $arg2
+	fi
+done
+!rm cell_info
 endfunc
 
 ####################################################################################################
 ### MAIN
 ####################################################################################################
+
 run $1
-# run cmds.mos
+#run cmds.mos

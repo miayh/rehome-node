@@ -55,4 +55,4 @@ $2 = `cat $undocommandfile`
 
 # idea: parse through lines of a file, where
 # each line contains the name of the files 
-# for each node
+# for each portion of the node
