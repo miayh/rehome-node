@@ -1,9 +1,7 @@
-getRadioInfo radioInfo.txt radioCreation.mos =RRU-1
-getRfPortInfo rfPortInfo.txt rfPortCreation.mos =RRU-6,RfPort=A
-getCellInfo cellInfo.txt cellCreation.mos cell
-
-### TO BE TESTED
-#getCarrierInfo carrierInfo.txt carrierCreation.mos SectorCarrier
-#getSectorInfo sectorInfo.txt sectorCreation.mos SectorEquipment
-#getBranchInfo branchInfo.txt branchCreation.mos rfBranch
-#getRiLinkInfo rilinkInfo.txt rilinkCreation.mos Equipment=1,RiLink
+getRadioInfo radioInfo.txt radioCreation.mos RU
+getRfPortInfo rfPortInfo.txt rfPortCreation.mos RfPort
+getCellInfo cellInfo.txt cellCreation.mos Cell
+getSectorInfo sectorInfo.txt sectorCreation.mos SectorEquipment
+getCarrierInfo carrierInfo.txt carrierCreation.mos SectorCarrier
+getAntennaInfo antennaInfo.txt antennaCreation.mos AntennaUnitGroup
+getRiLinkInfo rilinkInfo.txt rilinkCreation.mos RiLink

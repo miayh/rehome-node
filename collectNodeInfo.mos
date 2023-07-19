@@ -5,7 +5,7 @@
 func createMOs
 for $cur_mo in $1
 	lgmc $cur_mo
-	!cp $undocommandfile $arg2
+	!cat $undocommandfile >> $arg2
 done
 endfunc
 
@@ -83,32 +83,15 @@ func getAntennaInfo
 $arg2 = $2
 $arg3 = $3
 l+ antenna_info
-lst $arg3
+get $arg3
 l-
 !cat antenna_info > $1
 ma antennas 0
-createGroup antenna_info ^\s+[0-9]+\s.*$arg3 antennas
+createGroup antenna_info ^[0-9]+\s.*$arg3 antennas
 mr antennas 0
 pr antennas
 createMOs antennas $arg2
 !rm antenna_info
-endfunc
-
-####################################################################################################
-
-func getBranchInfo
-$arg2 = $2
-$arg3 = $3
-l+ branch_info
-hget . $arg3
-l-
-!cat branch_info > $1
-ma branches 0
-createGroup branch_info ^\s+[0-9]+\s.*$arg3 branches
-mr branches 0
-pr branches
-createMOs branches $arg2
-!rm branch_info
 endfunc
 
 ####################################################################################################

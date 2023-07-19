@@ -1,0 +1,68 @@
+####################################################################################################
+### FUNCTION DEFINITIONS
+####################################################################################################
+
+func createMOs
+for $cur_mo in $1
+	lgmc $cur_mo
+	!cat $undocommandfile >> $arg2
+done
+endfunc
+
+####################################################################################################
+
+func createGroup
+unset $output
+unset $nr_of_lines
+unset $i
+$output = readfile($1)
+for $i = 1 to $nr_of_lines
+	$mo = $output[$i]
+	if $mo ~ $2
+		$mo_parts = split($mo)
+		$proxy = $mo_parts[1]
+		ma $3 $proxy
+	fi
+done
+endfunc
+
+####################################################################################################
+
+func getRadioInfo
+$arg2 = $2
+$arg3 = $3
+l+ radio_info
+st $3
+l-
+!cat radio_info > $1
+ma radios 0
+createGroup radio_info ^\s+[0-9]+\s.*$arg3 radios
+mr radios 0
+pr radios
+createMOs radios $arg2
+!rm radio_info
+endfunc
+
+####################################################################################################
+
+func getRfPortInfo
+$arg2 = $2
+$arg3 = $3
+l+ rfport_info
+lst $arg3
+l-
+!cat rfport_info > $1
+ma ports 0
+createGroup rfport_info ^\s+[0-9]+\s.*$arg3 ports
+mr ports 0
+pr ports
+createMOs ports $arg2
+!rm rfport_info
+endfunc
+
+####################################################################################################
+### MAIN
+####################################################################################################
+
+run $1
+# run cmds.mos
