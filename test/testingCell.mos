@@ -3,7 +3,9 @@
 ####################################################################################################
 
 func createCell
-lgmc $cur_mo
+### Appends commands to a file that are needed to create a certain MO.
+### $1: the name of the MO
+lgmc $1
 !cat $undocommandfile >> $arg2
 endfunc
 
@@ -27,6 +29,11 @@ endfunc
 ####################################################################################################
 
 func getCellProperties
+### Collects a given cells properties (frequencies, TAC, PCI)
+### and appends the information to a given file.
+###
+### $1: the RDN name of the MO
+### $2: the file to append to
 if $1 ~ ^EUtranCell
 	l+ cell_def
 	hget $1 dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
@@ -45,6 +52,12 @@ endfunc
 ####################################################################################################
 
 func getCellInfo
+### Retrieves all the information related to a cell and produces a file with
+### the cell names and a file with the commands needed to recreate the cells.
+### 
+### $1: the file to write to with the list of all cells
+### $2: the file to append all the MO-creation commands
+### $3: the string to identify all cells
 unset $cell_info_output
 unset $nr_of_lines
 unset $i
@@ -73,5 +86,4 @@ endfunc
 ### MAIN
 ####################################################################################################
 
-run $1
-#run cmds.mos
+getCellInfo cellInfo.txt cellCreation.mos Cell

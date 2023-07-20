@@ -1,5 +1,4 @@
 getRadioInfo radioInfo.txt radioCreation.mos RU
-getRfPortInfo rfPortInfo.txt rfPortCreation.mos RfPort
 getCellInfo cellInfo.txt cellCreation.mos Cell
 getSectorInfo sectorInfo.txt sectorCreation.mos SectorEquipment
 getCarrierInfo carrierInfo.txt carrierCreation.mos SectorCarrier

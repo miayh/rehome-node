@@ -3,6 +3,11 @@
 ####################################################################################################
 
 func createMOs
+### Given a group of related MOS, appends to a file with the
+### commands needed to create all the MOs for every MO in the group.
+###
+### $1: the group of related MOs
+### $2: the file to append the commands for creation
 for $cur_mo in $1
 	lgmc $cur_mo
 	!cat $undocommandfile >> $arg2
@@ -12,6 +17,10 @@ endfunc
 ####################################################################################################
 
 func createGroup
+### Creates a group of MOs based on a given name criteria.
+###
+### $2: the string the MO must have in its name for it to be included in the group
+### $3: the group in which to store the MOs
 unset $output
 unset $nr_of_lines
 unset $i
@@ -29,6 +38,12 @@ endfunc
 ####################################################################################################
 
 func getRadioInfo
+### Appends commands to a file to create the neccessary MOs
+### for a radio unit.
+###
+### $1: the file to write to with the list all the radio-related MOs
+### $2: the file to append the commands for creation
+### $3: a string to identify MOs related to the radio
 $arg2 = $2
 $arg3 = $3
 l+ radio_info
@@ -45,24 +60,13 @@ endfunc
 
 ####################################################################################################
 
-func getRfPortInfo
-$arg2 = $2
-$arg3 = $3
-l+ rfport_info
-lst $arg3
-l-
-!cat rfport_info > $1
-ma ports 0
-createGroup rfport_info ^\s+[0-9]+\s.*$arg3 ports
-mr ports 0
-pr ports
-createMOs ports $arg2
-!rm rfport_info
-endfunc
-
-####################################################################################################
-
 func getRiLinkInfo
+### Appends commands to a file to create the neccessary MOs
+### for all the Ri links.
+###
+### $1: the file to write to with the list all the Ri-link-related MOs
+### $2: the file to append the commands for creation
+### $3: a string to identify MOs related to Ri links
 $arg2 = $2
 $arg3 = $3
 l+ rilink_info
@@ -80,6 +84,12 @@ endfunc
 ####################################################################################################
 
 func getAntennaInfo
+### Appends commands to a file to create the neccessary MOs
+### for an antenna unit.
+###
+### $1: the file to write to with the list all the antenna-related MOs
+### $2: the file to append the commands for creation
+### $3: a string to identify MOs related to the antenna
 $arg2 = $2
 $arg3 = $3
 l+ antenna_info
@@ -97,6 +107,12 @@ endfunc
 ####################################################################################################
 
 func getCarrierInfo
+### Appends commands to a file to create the neccessary MOs
+### for all the carriers.
+###
+### $1: the file to write to with the list all the carrier-related MOs
+### $2: the file to append the commands for creation
+### $3: a string to identify MOs related to the carriers
 $arg2 = $2
 $arg3 = $3
 l+ carrier_info
@@ -114,6 +130,12 @@ endfunc
 ####################################################################################################
 
 func getSectorInfo
+### Appends commands to a file to create the neccessary MOs
+### for all the sectors.
+###
+### $1: the file to write to with the list all the sector-related MOs
+### $2: the file to append the commands for creation
+### $3: a string to identify MOs related to the sectors
 $arg2 = $2
 $arg3 = $3
 l+ sector_info
@@ -131,13 +153,20 @@ endfunc
 ####################################################################################################
 
 func createCell
-lgmc $cur_mo
+### Appends commands to a file that are needed to create a certain MO.
+### $1: the name of the MO
+lgmc $1
 !cat $undocommandfile >> $arg2
 endfunc
 
 ####################################################################################################
 
 func getCellProperties
+### Collects a given cells properties (frequencies, TAC, PCI)
+### and appends the information to a given file.
+###
+### $1: the RDN name of the MO
+### $2: the file to append to
 if $1 ~ ^EUtranCell
 	l+ cell_def
 	hget $1 dlChannelBandwidth|earfcndl|freqband$|physicalLayerCellId$|operationslState|tac$
@@ -156,6 +185,12 @@ endfunc
 ####################################################################################################
 
 func getCellInfo
+### Retrieves all the information related to a cell and produces a file with
+### the cell names and a file with the commands needed to recreate the cells.
+### 
+### $1: the file to write to with the list of all cells
+### $2: the file to append all the MO-creation commands
+### $3: the string to identify all cells
 unset $cell_info_output
 unset $nr_of_lines
 unset $i
@@ -184,4 +219,9 @@ endfunc
 ### MAIN
 ####################################################################################################
 
+### Calls a file with the function calls and their respective parameters 
+### 
+### e.g. `run cmds.mos`, where each line is formatted in the following way:
+### 	 [FUNCTION] [FILE1] [FILE2] [SUBSTRING]
+### 	 e.g. getRadioInfo radioInfo.txt radioCreation.mos RU
 run $1
