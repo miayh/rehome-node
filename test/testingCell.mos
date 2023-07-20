@@ -4,8 +4,7 @@
 
 func createCell
 ### Appends commands to a file that are needed to create a certain MO.
-### $1: the name of the MO
-lgmc $1
+lgmc $ldn
 !cat $undocommandfile >> $arg2
 endfunc
 
