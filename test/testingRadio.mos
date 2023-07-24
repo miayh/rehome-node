@@ -44,23 +44,6 @@ createMOs radios $arg2
 endfunc
 
 ####################################################################################################
-
-func getRfPortInfo
-$arg2 = $2
-$arg3 = $3
-l+ rfport_info
-lst $arg3
-l-
-!cat rfport_info > $1
-ma ports 0
-createGroup rfport_info ^\s+[0-9]+\s.*$arg3 ports
-mr ports 0
-pr ports
-createMOs ports $arg2
-!rm rfport_info
-endfunc
-
-####################################################################################################
 ### MAIN
 ####################################################################################################
 

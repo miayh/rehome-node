@@ -1,4 +1,4 @@
-getRadioInfo radioInfo.txt radioCreation.mos RU
+getRadioInfo radioInfo.txt radioCreation.mos FieldReplaceableUnit=R
 getRiLinkInfo rilinkInfo.txt rilinkCreation.mos RiLink
 getAntennaInfo antennaInfo.txt antennaCreation.mos AntennaUnitGroup
 getSectorInfo sectorInfo.txt sectorCreation.mos SectorEquipment
