@@ -2,14 +2,6 @@
 ### FUNCTION DEFINITIONS
 ####################################################################################################
 
-func createCell
-### Appends commands to a file that are needed to create a certain MO.
-lgmc $ldn
-!cat $undocommandfile >> $arg2
-endfunc
-
-####################################################################################################
-
 func createGroup
 unset $output
 unset $nr_of_lines
@@ -23,6 +15,14 @@ for $i = 1 to $nr_of_lines
 		ma $3 $proxy
 	fi
 done
+endfunc
+
+####################################################################################################
+
+func createCell
+### Appends commands to a file that are needed to create a certain MO.
+lgmc $ldn
+!cat $undocommandfile >> $arg1
 endfunc
 
 ####################################################################################################
@@ -54,18 +54,16 @@ func getCellInfo
 ### Retrieves all the information related to a cell and produces a file with
 ### the cell names and a file with the commands needed to recreate the cells.
 ### 
-### $1: the file to write to with the list of all cells
-### $2: the file to append all the MO-creation commands
-### $3: the string to identify all cells
+### $1: the file to append all the MO-creation commands
+### $2: the string to identify all cells
 unset $cell_info_output
 unset $nr_of_lines
 unset $i
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ cell_info
-st $arg3
+st $arg2
 l-
-!cat cell_info > $1
 $cell_info_output = readfile(cell_info)
 for $i = 1 to $nr_of_lines
 	$cell_mo = $cell_info_output[$i]
@@ -75,7 +73,7 @@ for $i = 1 to $nr_of_lines
 		$ldn = ldn($cell_proxy)
 		$rdn = rdn($cell_proxy)
 		getCellProperties $rdn cellProperties.txt
-		createCell $ldn $arg2
+		createCell $ldn $arg1
 	fi
 done
 !rm cell_info
@@ -85,4 +83,4 @@ endfunc
 ### MAIN
 ####################################################################################################
 
-getCellInfo cellInfo.txt cellCreation.mos Cell
+getCellInfo cellCreation.mos Cell

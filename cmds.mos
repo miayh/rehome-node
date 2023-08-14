@@ -1,6 +1,6 @@
-getRadioInfo radioInfo.txt radioCreation.mos FieldReplaceableUnit=R
-getRiLinkInfo rilinkInfo.txt rilinkCreation.mos RiLink
-getAntennaInfo antennaInfo.txt antennaCreation.mos AntennaUnitGroup
-getSectorInfo sectorInfo.txt sectorCreation.mos SectorEquipment
-getCarrierInfo carrierInfo.txt carrierCreation.mos SectorCarrier
-getCellInfo cellInfo.txt cellCreation.mos Cell
+getRadioInfo radioCreation.mos FieldReplaceableUnit=R
+getRiLinkInfo rilinkCreation.mos RiLink
+getAntennaInfo antennaCreation.mos AntennaUnitGroup
+getSectorInfo sectorCreation.mos SectorEquipment
+getCarrierInfo carrierCreation.mos SectorCarrier
+getCellInfo cellCreation.mos Cell

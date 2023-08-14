@@ -5,7 +5,7 @@
 func createMOs
 for $cur_mo in $1
 	lgmc $cur_mo
-	!cat $undocommandfile >> $arg2
+	!cat $undocommandfile >> $arg1
 done
 endfunc
 
@@ -29,17 +29,20 @@ endfunc
 ####################################################################################################
 
 func getRadioInfo
+### Appends commands to a file to create the neccessary MOs
+### for a radio unit.
+###
+### $1: the file to append the commands for creation
+### $2: a string to identify MOs related to the radio
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ radio_info
-st $3
+st $arg2
 l-
-!cat radio_info > $1
 ma radios 0
-createGroup radio_info ^\s+[0-9]+\s.*$arg3 radios
+createGroup radio_info ^\s+[0-9]+\s.*$arg2 radios
 mr radios 0
-pr radios
-createMOs radios $arg2
+createMOs radios $arg1
 !rm radio_info
 endfunc
 

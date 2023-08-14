@@ -10,7 +10,7 @@ func createMOs
 ### $2: the file to append the commands for creation
 for $cur_mo in $1
 	lgmc $cur_mo
-	!cat $undocommandfile >> $arg2
+	!cat $undocommandfile >> $arg1
 done
 endfunc
 
@@ -41,20 +41,17 @@ func getRadioInfo
 ### Appends commands to a file to create the neccessary MOs
 ### for a radio unit.
 ###
-### $1: the file to write to with the list all the radio-related MOs
-### $2: the file to append the commands for creation
-### $3: a string to identify MOs related to the radio
+### $1: the file to append the commands for creation
+### $2: a string to identify MOs related to the radio
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ radio_info
-st $3
+st $arg2
 l-
-!cat radio_info > $1
 ma radios 0
-createGroup radio_info ^\s+[0-9]+\s.*$arg3 radios
+createGroup radio_info ^\s+[0-9]+\s.*$arg2 radios
 mr radios 0
-pr radios
-createMOs radios $arg2
+createMOs radios $arg1
 !rm radio_info
 endfunc
 
@@ -64,20 +61,17 @@ func getRiLinkInfo
 ### Appends commands to a file to create the neccessary MOs
 ### for all the Ri links.
 ###
-### $1: the file to write to with the list all the Ri-link-related MOs
-### $2: the file to append the commands for creation
-### $3: a string to identify MOs related to Ri links
+### $1: the file to append the commands for creation
+### $2: a string to identify MOs related to Ri links
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ rilink_info
-lst $arg3
+lst $arg2
 l-
-!cat rilink_info > $1
 ma rilinks 0
-createGroup rilink_info ^\s+[0-9]+\s.*$arg3 rilinks
+createGroup rilink_info ^\s+[0-9]+\s.*$arg2 rilinks
 mr rilinks 0
-pr rilinks
-createMOs rilinks $arg2
+createMOs rilinks $arg1
 !rm rilink_info
 endfunc
 
@@ -87,20 +81,17 @@ func getAntennaInfo
 ### Appends commands to a file to create the neccessary MOs
 ### for an antenna unit.
 ###
-### $1: the file to write to with the list all the antenna-related MOs
-### $2: the file to append the commands for creation
-### $3: a string to identify MOs related to the antenna
+### $1: the file to append the commands for creation
+### $2: a string to identify MOs related to the antenna
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ antenna_info
-get $arg3
+get $arg2
 l-
-!cat antenna_info > $1
 ma antennas 0
-createGroup antenna_info ^[0-9]+\s.*$arg3 antennas
+createGroup antenna_info ^[0-9]+\s.*$arg2 antennas
 mr antennas 0
-pr antennas
-createMOs antennas $arg2
+createMOs antennas $arg1
 !rm antenna_info
 endfunc
 
@@ -110,20 +101,17 @@ func getCarrierInfo
 ### Appends commands to a file to create the neccessary MOs
 ### for all the carriers.
 ###
-### $1: the file to write to with the list all the carrier-related MOs
-### $2: the file to append the commands for creation
-### $3: a string to identify MOs related to the carriers
+### $1: the file to append the commands for creation
+### $2: a string to identify MOs related to the carriers
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ carrier_info
-st $arg3
+st $arg2
 l-
-!cat carrier_info > $1
 ma carriers 0
-createGroup carrier_info ^\s+[0-9]+\s.*$arg3 carriers
+createGroup carrier_info ^\s+[0-9]+\s.*$arg2 carriers
 mr carriers 0
-pr carriers
-createMOs carriers $arg2
+createMOs carriers $arg1
 !rm carrier_info
 endfunc
 
@@ -133,20 +121,17 @@ func getSectorInfo
 ### Appends commands to a file to create the neccessary MOs
 ### for all the sectors.
 ###
-### $1: the file to write to with the list all the sector-related MOs
-### $2: the file to append the commands for creation
-### $3: a string to identify MOs related to the sectors
+### $1: the file to append the commands for creation
+### $2: a string to identify MOs related to the sectors
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ sector_info
-st $arg3
+st $arg2
 l-
-!cat sector_info > $1
 ma sectors 0
-createGroup sector_info ^\s+[0-9]+\s.*$arg3 sectors
+createGroup sector_info ^\s+[0-9]+\s.*$arg2 sectors
 mr sectors 0
-pr sectors
-createMOs sectors $arg2
+createMOs sectors $arg1
 !rm sector_info
 endfunc
 
@@ -155,7 +140,7 @@ endfunc
 func createCell
 ### Appends commands to a file that are needed to create a certain MO.
 lgmc $ldn
-!cat $undocommandfile >> $arg2
+!cat $undocommandfile >> $arg1
 endfunc
 
 ####################################################################################################
@@ -187,18 +172,16 @@ func getCellInfo
 ### Retrieves all the information related to a cell and produces a file with
 ### the cell names and a file with the commands needed to recreate the cells.
 ### 
-### $1: the file to write to with the list of all cells
-### $2: the file to append all the MO-creation commands
-### $3: the string to identify all cells
+### $1: the file to append all the MO-creation commands
+### $2: the string to identify all cells
 unset $cell_info_output
 unset $nr_of_lines
 unset $i
+$arg1 = $1
 $arg2 = $2
-$arg3 = $3
 l+ cell_info
-st $arg3
+st $arg2
 l-
-!cat cell_info > $1
 $cell_info_output = readfile(cell_info)
 for $i = 1 to $nr_of_lines
 	$cell_mo = $cell_info_output[$i]
@@ -208,7 +191,7 @@ for $i = 1 to $nr_of_lines
 		$ldn = ldn($cell_proxy)
 		$rdn = rdn($cell_proxy)
 		getCellProperties $rdn cellProperties.txt
-		createCell $ldn $arg2
+		createCell $ldn $arg1
 	fi
 done
 !rm cell_info
@@ -220,7 +203,9 @@ endfunc
 
 ### Calls a file with the function calls and their respective parameters 
 ### 
-### e.g. `run cmds.mos`, where each line is formatted in the following way:
-### 	 [FUNCTION] [FILE1] [FILE2] [SUBSTRING]
-### 	 e.g. getRadioInfo radioInfo.txt radioCreation.mos RU
+### Example usage:
+### `run collectNodeInfo.mos cmds.mos`, where each line in cmds.mos is formatted in the following way:
+### 	 
+### 	[FUNCTION] [FILE1] [SUBSTRING]
+### 	getRadioInfo radioCreation.mos FieldReplaceableUnit=R
 run $1
