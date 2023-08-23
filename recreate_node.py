@@ -12,6 +12,7 @@ import argparse
 import multiprocessing as mp
 import functools
 import time
+import re
 
 OG_MOS_CREATION_FILES = []
 

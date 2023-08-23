@@ -7,10 +7,8 @@ func createMOs
 ### commands needed to create all the MOs for every MO in the group.
 ###
 ### $1: the group of related MOs
-### $2: the file to append the commands for creation
-for $cur_mo in $1
-	lgmc $cur_mo
-	!cat $undocommandfile >> $arg1
+lgmc $1
+!cat $undocommandfile >> $arg1
 done
 endfunc
 
@@ -137,14 +135,6 @@ endfunc
 
 ####################################################################################################
 
-func createCell
-### Appends commands to a file that are needed to create a certain MO.
-lgmc $ldn
-!cat $undocommandfile >> $arg1
-endfunc
-
-####################################################################################################
-
 func getCellProperties
 ### Collects a given cells properties (frequencies, TAC, PCI)
 ### and appends the information to a given file.
@@ -191,7 +181,7 @@ for $i = 1 to $nr_of_lines
 		$ldn = ldn($cell_proxy)
 		$rdn = rdn($cell_proxy)
 		getCellProperties $rdn cellProperties.txt
-		createCell $ldn $arg1
+		createMOs $ldn $arg1
 	fi
 done
 !rm cell_info
